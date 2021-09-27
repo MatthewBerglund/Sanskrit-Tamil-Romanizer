@@ -1,0 +1,12 @@
+[X] It should romanize Tamil script
+[X] It should romanize Sanskrit script
+[X] The user should be able to switch between Tamil and Sanskrit
+[ ] Tamil/Sanskrit text should be romanized as text is being entered (no button click)
+[ ] The user should be able to type to enter special characters, e.g. "ē", "ṅa"
+[ ] It should be possible to turn romanized text into Tamil or Sankrit
+
+
+
+To fix:
+
+
