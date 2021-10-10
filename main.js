@@ -14,6 +14,7 @@ const indicTextField = document.getElementById('indic-input');
 const romanizedTextField = document.getElementById('romanized-input');
 
 romanizeButton.addEventListener('click', handleRomanizeClick);
+romanizedTextField.addEventListener('keyup', applyIastDiacritics);
 
 function handleRomanizeClick() {
   var textToRomanize = indicTextField.value;
@@ -27,6 +28,9 @@ function handleRomanizeClick() {
 
 function romanizeTamil(tamilText) {
   var textToRomanize = tamilText;
+  
+  // śrī compound
+  textToRomanize = textToRomanize.replace(/ஸ்ரீ/g, 'śrī');
   
   // Vowels
   textToRomanize = textToRomanize.replace(/்/g, '\u200b');
@@ -93,23 +97,16 @@ function romanizeTamil(tamilText) {
   // Placeholders (\u200b, A)
   textToRomanize = textToRomanize.replace(/A\u200b/g, '');
   textToRomanize = textToRomanize.replace(/Aā/g, 'ā');
-
   textToRomanize = textToRomanize.replace(/Ai/g, 'i');
   textToRomanize = textToRomanize.replace(/Aī/g, 'ī');
-
   textToRomanize = textToRomanize.replace(/Au/g, 'u');
   textToRomanize = textToRomanize.replace(/Aū/g, 'ū');
-
   textToRomanize = textToRomanize.replace(/Ae/g, 'e');
   textToRomanize = textToRomanize.replace(/Aē/g, 'ē');
-
   textToRomanize = textToRomanize.replace(/Aai/g, 'ai');
-
   textToRomanize = textToRomanize.replace(/Ao/g, 'o');
   textToRomanize = textToRomanize.replace(/Aō/g, 'ō');
-
   textToRomanize = textToRomanize.replace(/Aau/g, 'au');
-
   textToRomanize = textToRomanize.replace(/A/g, 'a');
 
   romanizedTextField.value = textToRomanize;
@@ -223,5 +220,45 @@ function romanizeSanskrit(sanskritText) {
   textToRomanize = textToRomanize.replace(/A/g, 'a');
 
   romanizedTextField.value = textToRomanize;
+}
+
+function applyIastDiacritics(keyupEvent) {
+  var iastText = keyupEvent.target.value;
+
+  iastText = iastText.replace(/aa/g, 'ā');
+  iastText = iastText.replace(/AA/g, 'Ā');
+  iastText = iastText.replace(/ii/g, 'ī');
+  iastText = iastText.replace(/II/g, 'Ī');
+  iastText = iastText.replace(/uu/g, 'ū');
+  iastText = iastText.replace(/UU/g, 'Ū');
+  iastText = iastText.replace(/rr/g, 'ṛ');
+  iastText = iastText.replace(/RR/g, 'Ṛ');
+  iastText = iastText.replace(/ṛr/g, 'ṝ');
+  iastText = iastText.replace(/ṚR/g, 'Ṝ');
+  iastText = iastText.replace(/ll/g, 'ḷ');
+  iastText = iastText.replace(/LL/g, 'Ḷ'); // L ---> Ḷ
+  iastText = iastText.replace(/ḷl/g, 'ḹ'); // ḷ ---> ḹ
+  iastText = iastText.replace(/ḶL/g, 'Ḹ'); // Ḷ ---> Ḹ
+  iastText = iastText.replace(/mm/g, 'ṃ'); // m ---> ṃ
+  iastText = iastText.replace(/MM/g, 'Ṃ'); // M ---> Ṃ
+  iastText = iastText.replace(/hh/g, 'ḥ'); // h ---> ḥ
+  iastText = iastText.replace(/HH/g, 'Ḥ');
+  // iastText = iastText.replace(/ttt/, 'tt');
+  iastText = iastText.replace(/ttt/g, 'ṭ'); // t ---> ṭ
+  iastText = iastText.replace(/TTT/g, 'Ṭ'); // T ---> Ṭ
+  iastText = iastText.replace(/dd/g, 'ḍ'); // d ---> ḍ
+  iastText = iastText.replace(/DD/g, 'Ḍ'); // D ---> Ḍ
+  iastText = iastText.replace(/nn/g, 'ṅ'); // n ---> ṅ
+  iastText = iastText.replace(/NN/g, 'Ṅ'); // N ---> Ṅ
+  iastText = iastText.replace(/ṅn/g, 'ñ'); // ṅ ---> ñ
+  iastText = iastText.replace(/ṄN/g, 'Ñ'); // Ṅ ---> Ñ
+  iastText = iastText.replace(/ñn/g, 'ṇ'); // ñ ---> ṇ
+  iastText = iastText.replace(/ÑN/g, 'Ṇ'); // Ñ ---> Ṇ
+  iastText = iastText.replace(/sss/g, 'ś'); // s ---> ś
+  iastText = iastText.replace(/SSS/g, 'Ś'); // S ---> Ś
+  iastText = iastText.replace(/śs/g, 'ṣ'); // ś ---> ṣ
+  iastText = iastText.replace(/ŚS/g, 'Ṣ'); // Ś ---> Ṣ
+
+  romanizedTextField.value = iastText;
 }
 
