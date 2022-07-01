@@ -1,12 +1,35 @@
 html {
-  font-family: 'Gentium Basic', serif;
+  font-family: 'Source Serif Pro', serif;
+}
+
+body {
+
 }
 
 h1 {
-  font-family: sans-serif;
   font-weight: lighter;
   text-transform: uppercase;
   letter-spacing: 8px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+#script-input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-field-container {
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+#target-text label {
+  display: block;
+  width: 120px;
+  height: 25px;
+  margin-bottom: 15px;
 }
 
 textarea {
@@ -14,33 +37,36 @@ textarea {
   width: 700px;
   height: 200px;
   resize: none;
-  font-size: 28px;
-  font-weight: bold;
-  letter-spacing: 1px;
 }
 
-.text-field {
-  display: inline-block;
-}
-
-#lang-select {
-  padding-bottom: 20px;
+#swap-direction {
+  cursor: pointer;
+  margin: 0 15px;
 }
 
 #indic-lang-select {
+  font: inherit;
   width: 120px;
   height: 25px;
+  margin-bottom: 15px;
 }
 
 #indic-input {
-  font-family: 'Hind Madurai', sans-serif; 
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 28px;
+  padding: 10px;
 }
 
 #romanized-input {
   font-family: inherit;
-  line-height: 38px;
+  font-size: 23px;
+  line-height: 35px;
+  padding: 10px;
 }
 
 #romanize-btn {
   display: block;
+  width: 150px;
+  height: 30px;
+  margin: 0 auto;
 }

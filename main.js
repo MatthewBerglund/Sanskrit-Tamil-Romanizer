@@ -1,29 +1,67 @@
-// உள்ளது அலது உள்ள உணர்வு உள்ளதோ
-// மும் முதலை எம் மதமும் முன்கொள்ளும்
-// உருவம் தான் ஆயின் உலகு பரம் அற்று ஆம்
-// உலகு ஐம் புலன்கள் உரு வேறு அன்று
+/*
+உள்ளது அலது உள்ள உணர்வு உள்ளதோ
+மும் முதலை எம் மதமும் முன்கொள்ளும்
+உருவம் தான் ஆயின் உலகு பரம் அற்று ஆம்
+உலகு ஐம் புலன்கள் உரு வேறு அன்று
 
-// धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः ।
-// मामकाः पाण्ड्वाश्चैव किमकुर्वत संजय ॥
-// दृष्ट्वा तु पाण्डवानीकं व्यूढं दुर्योधनस् तदा ।
-// आचार्यम् उपसंगम्य राजा वचनम् अब्रवीत् ॥
+धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः ।
+मामकाः पाण्ड्वाश्चैव किमकुर्वत संजय ॥
+दृष्ट्वा तु पाण्डवानीकं व्यूढं दुर्योधनस् तदा ।
+आचार्यम् उपसंगम्य राजा वचनम् अब्रवीत् ॥
+*/
 
-const indicLanguageSelect = document.getElementById('indic-lang-select');
-const romanizeButton = document.getElementById('romanize-btn');
-const indicTextField = document.getElementById('indic-input');
-const romanizedTextField = document.getElementById('romanized-input');
+var indicTextField = document.getElementById('indic-input');
+var romanizedTextField = document.getElementById('romanized-input');
+var indicLanguageSelect = document.getElementById('indic-lang-select');
+var swapDirectionBtn = document.getElementById('swap-direction');
+var romanizeButton = document.getElementById('romanize-btn');
+
+var inputReversed = false; 
 
 romanizeButton.addEventListener('click', handleRomanizeClick);
-romanizedTextField.addEventListener('keyup', applyIastDiacritics);
+romanizedTextField.addEventListener('keyup', handleRomanizedInput);
+swapDirectionBtn.addEventListener('click', handleSwapClick);
+indicLanguageSelect.addEventListener('change', handleIndicSelection);
+
+function handleIndicSelection(changeEvent) {
+  if (changeEvent.target.value === 'sanskrit') {
+    indicTextField.style.fontFamily = 'Noto Sans Devanagari, sans-serif';
+    indicTextField.style.fontSize = '28px';
+  } else {
+    indicTextField.style.fontFamily = 'Hind Madurai, sans-serif';
+    indicTextField.style.fontSize = '24px';
+  }
+}
+
+function handleSwapClick() {
+  if (!inputReversed) {
+    document.getElementById('script-input-container').style.flexDirection = 'row-reverse';
+    inputReversed = true;
+  } else {
+    document.getElementById('script-input-container').style.flexDirection = 'row';
+    inputReversed = false;
+  }
+}
 
 function handleRomanizeClick() {
   var textToRomanize = indicTextField.value;
 
   if (indicLanguageSelect.value === 'sanskrit') {
-    romanizeSanskrit(textToRomanize);
+    romanizedTextField.value = romanizeSanskrit(textToRomanize);
   } else if (indicLanguageSelect.value === 'tamil') {
-    romanizeTamil(textToRomanize);
+    romanizedTextField.value = romanizeTamil(textToRomanize);
   }
+}
+
+function handleRomanizedInput(keyupEvent) {
+  var iastText = applyIastDiacritics(keyupEvent.target.value);
+  romanizedTextField.value = iastText;
+
+  if (indicLanguageSelect.value === 'tamil') {
+    var tamilizedText = tamilize(iastText);
+    indicTextField.value = tamilizedText;
+  }
+  
 }
 
 function romanizeTamil(tamilText) {
@@ -109,7 +147,8 @@ function romanizeTamil(tamilText) {
   textToRomanize = textToRomanize.replace(/Aau/g, 'au');
   textToRomanize = textToRomanize.replace(/A/g, 'a');
 
-  romanizedTextField.value = textToRomanize;
+  return textToRomanize;
+  //romanizedTextField.value = textToRomanize;
 }
 
 function romanizeSanskrit(sanskritText) {
@@ -219,46 +258,166 @@ function romanizeSanskrit(sanskritText) {
   textToRomanize = textToRomanize.replace(/Aḥ/g, 'aḥ');
   textToRomanize = textToRomanize.replace(/A/g, 'a');
 
-  romanizedTextField.value = textToRomanize;
+  return textToRomanize;
+  // romanizedTextField.value = textToRomanize;
 }
 
-function applyIastDiacritics(keyupEvent) {
-  var iastText = keyupEvent.target.value;
+function tamilize(romanizedText) {
+  var tamilizedString = romanizedText;
+
+  tamilizedString = tamilizedString.replace(/ai/g, 'aAI');
+  tamilizedString = tamilizedString.replace(/au/g, 'aAU');
+  tamilizedString = tamilizedString.replace(/ā/g, 'aā');
+  tamilizedString = tamilizedString.replace(/i/g, 'ai');
+  tamilizedString = tamilizedString.replace(/ī/g, 'aī');
+  tamilizedString = tamilizedString.replace(/u/g, 'au');
+  tamilizedString = tamilizedString.replace(/ū/g, 'aū');
+  tamilizedString = tamilizedString.replace(/e/g, 'ae');
+  tamilizedString = tamilizedString.replace(/ē/g, 'aē');
+  tamilizedString = tamilizedString.replace(/o/g, 'ao');
+  tamilizedString = tamilizedString.replace(/ō/g, 'aō');
+  
+  // puḷḷi: regex looks for any consonant k that does not have a
+  // vowel after it and replaces it with ka் using a backreference $1 to the consonant itself
+  tamilizedString = tamilizedString.replace(/([kṅcñṭṇtnpmyrlvḻḷṟṉśjṣsh(kṣ)](?![aāiīuūeēoō]))/g, '$1a்');
+
+  // Consonants
+  tamilizedString = tamilizedString.replace(/ka/g, 'க');
+  tamilizedString = tamilizedString.replace(/ṅa/g, 'ங');
+  tamilizedString = tamilizedString.replace(/ca/g, 'ச');
+  tamilizedString = tamilizedString.replace(/ña/g, 'ஞ');
+  tamilizedString = tamilizedString.replace(/ṭa/g, 'ட');
+  tamilizedString = tamilizedString.replace(/ṇa/g, 'ண');
+  tamilizedString = tamilizedString.replace(/ta/g, 'த');
+  tamilizedString = tamilizedString.replace(/na/g, 'ந');
+  tamilizedString = tamilizedString.replace(/pa/g, 'ப');
+  tamilizedString = tamilizedString.replace(/ma/g, 'ம');
+  tamilizedString = tamilizedString.replace(/ya/g, 'ய');
+  tamilizedString = tamilizedString.replace(/ra/g, 'ர');
+  tamilizedString = tamilizedString.replace(/la/g, 'ல');
+  tamilizedString = tamilizedString.replace(/va/g, 'வ');
+  tamilizedString = tamilizedString.replace(/ḻa/g, 'ழ');
+  tamilizedString = tamilizedString.replace(/ḷa/g, 'ள');
+  tamilizedString = tamilizedString.replace(/ṟa/g, 'ற');
+  tamilizedString = tamilizedString.replace(/ṉa/g, 'ன');
+  tamilizedString = tamilizedString.replace(/śa/g, 'ஶ');
+  tamilizedString = tamilizedString.replace(/ja/g, 'ஜ');
+  tamilizedString = tamilizedString.replace(/ṣa/g, 'ஷ');
+  tamilizedString = tamilizedString.replace(/sa/g, 'ஸ');
+  tamilizedString = tamilizedString.replace(/ha/g, 'ஹ');
+  // tamilizedString = tamilizedString.replace(/kṣa/g, '');
+  
+
+  // Word-initial vowels
+  tamilizedString = tamilizedString.replace(/aAI/g, 'ஐ');
+  tamilizedString = tamilizedString.replace(/aAU/g, 'ஔ');
+  tamilizedString = tamilizedString.replace(/aā/g, 'ஆ');
+  tamilizedString = tamilizedString.replace(/ai/g, 'இ');
+  tamilizedString = tamilizedString.replace(/aī/g, 'ஈ');
+  tamilizedString = tamilizedString.replace(/au/g, 'உ');
+  tamilizedString = tamilizedString.replace(/aū/g, 'ஊ');
+  tamilizedString = tamilizedString.replace(/ae/g, 'எ');
+  tamilizedString = tamilizedString.replace(/aē/g, 'ஏ');
+  tamilizedString = tamilizedString.replace(/ao/g, 'ஒ');
+  tamilizedString = tamilizedString.replace(/aō/g, 'ஓ');
+  tamilizedString = tamilizedString.replace(/a/g, 'அ');
+
+  // Combined vowels
+  tamilizedString = tamilizedString.replace(/AI/g, 'ை');
+  tamilizedString = tamilizedString.replace(/AU/g, 'ௌ');
+  tamilizedString = tamilizedString.replace(/ā/g, 'ா');
+  tamilizedString = tamilizedString.replace(/i/g, 'ி');
+  tamilizedString = tamilizedString.replace(/ī/g, 'ீ');
+  tamilizedString = tamilizedString.replace(/u/g, 'ு');
+  tamilizedString = tamilizedString.replace(/ū/g, 'ூ');
+  tamilizedString = tamilizedString.replace(/e/g, 'ெ');
+  tamilizedString = tamilizedString.replace(/ē/g, 'ே');
+  tamilizedString = tamilizedString.replace(/o/g, 'ொ');
+  tamilizedString = tamilizedString.replace(/ō/g, 'ோ');
+
+  tamilizedString = tamilizedString.replace(/ḵ/g, 'ஃ');
+  
+  return tamilizedString;
+}
+
+function applyIastDiacritics(romanizedText) {
+  var iastText = romanizedText;
 
   iastText = iastText.replace(/aa/g, 'ā');
   iastText = iastText.replace(/AA/g, 'Ā');
   iastText = iastText.replace(/ii/g, 'ī');
   iastText = iastText.replace(/II/g, 'Ī');
+  iastText = iastText.replace(/ee/g, 'ē');
+  iastText = iastText.replace(/EE/g, 'Ē');
+  iastText = iastText.replace(/oo/g, 'ō');
+  iastText = iastText.replace(/OO/g, 'Ō');
   iastText = iastText.replace(/uu/g, 'ū');
   iastText = iastText.replace(/UU/g, 'Ū');
-  iastText = iastText.replace(/rr/g, 'ṛ');
-  iastText = iastText.replace(/RR/g, 'Ṛ');
-  iastText = iastText.replace(/ṛr/g, 'ṝ');
-  iastText = iastText.replace(/ṚR/g, 'Ṝ');
-  iastText = iastText.replace(/ll/g, 'ḷ');
-  iastText = iastText.replace(/LL/g, 'Ḷ'); // L ---> Ḷ
-  iastText = iastText.replace(/ḷl/g, 'ḹ'); // ḷ ---> ḹ
-  iastText = iastText.replace(/ḶL/g, 'Ḹ'); // Ḷ ---> Ḹ
-  iastText = iastText.replace(/mm/g, 'ṃ'); // m ---> ṃ
-  iastText = iastText.replace(/MM/g, 'Ṃ'); // M ---> Ṃ
-  iastText = iastText.replace(/hh/g, 'ḥ'); // h ---> ḥ
-  iastText = iastText.replace(/HH/g, 'Ḥ');
-  // iastText = iastText.replace(/ttt/, 'tt');
-  iastText = iastText.replace(/ttt/g, 'ṭ'); // t ---> ṭ
-  iastText = iastText.replace(/TTT/g, 'Ṭ'); // T ---> Ṭ
-  iastText = iastText.replace(/dd/g, 'ḍ'); // d ---> ḍ
-  iastText = iastText.replace(/DD/g, 'Ḍ'); // D ---> Ḍ
-  iastText = iastText.replace(/nn/g, 'ṅ'); // n ---> ṅ
-  iastText = iastText.replace(/NN/g, 'Ṅ'); // N ---> Ṅ
-  iastText = iastText.replace(/ṅn/g, 'ñ'); // ṅ ---> ñ
-  iastText = iastText.replace(/ṄN/g, 'Ñ'); // Ṅ ---> Ñ
-  iastText = iastText.replace(/ñn/g, 'ṇ'); // ñ ---> ṇ
-  iastText = iastText.replace(/ÑN/g, 'Ṇ'); // Ñ ---> Ṇ
-  iastText = iastText.replace(/sss/g, 'ś'); // s ---> ś
-  iastText = iastText.replace(/SSS/g, 'Ś'); // S ---> Ś
-  iastText = iastText.replace(/śs/g, 'ṣ'); // ś ---> ṣ
-  iastText = iastText.replace(/ŚS/g, 'Ṣ'); // Ś ---> Ṣ
 
-  romanizedTextField.value = iastText;
+  iastText = iastText.replace(/n=/g, 'ṇ');
+  iastText = iastText.replace(/ṇ=/g, 'ṅ');
+  iastText = iastText.replace(/ṅ=/g, 'ṉ');
+  iastText = iastText.replace(/ṉ=/g, 'ñ');
+  iastText = iastText.replace(/ñ=/g, 'n');
+  iastText = iastText.replace(/N=/g, 'Ṇ');
+  iastText = iastText.replace(/Ṇ=/g, 'Ṅ');
+  iastText = iastText.replace(/Ṅ=/g, 'Ṉ');
+  iastText = iastText.replace(/Ṉ=/g, 'Ñ');
+  iastText = iastText.replace(/Ñ=/g, 'N');
+  
+  iastText = iastText.replace(/r=/g, 'ṛ');
+  iastText = iastText.replace(/ṛ=/g, 'ṟ');
+  iastText = iastText.replace(/ṟ=/g, 'ṝ');
+  iastText = iastText.replace(/ṝ=/g, 'r');
+  iastText = iastText.replace(/R=/g, 'Ṛ');
+  iastText = iastText.replace(/Ṛ=/g, 'Ṟ');
+  iastText = iastText.replace(/Ṟ=/g, 'Ṝ');
+  iastText = iastText.replace(/Ṝ=/g, 'R');
+
+  iastText = iastText.replace(/l=/g, 'ḷ');
+  iastText = iastText.replace(/ḷ=/g, 'ḻ');
+  iastText = iastText.replace(/ḻ=/g, 'ḹ');
+  iastText = iastText.replace(/ḹ=/g, 'l');
+  iastText = iastText.replace(/L=/g, 'Ḷ');
+  iastText = iastText.replace(/Ḷ=/g, 'Ḻ');
+  iastText = iastText.replace(/Ḻ=/g, 'Ḹ');
+  iastText = iastText.replace(/Ḹ=/g, 'L');
+
+  iastText = iastText.replace(/s=/g, 'ṣ');
+  iastText = iastText.replace(/ṣ=/g, 'ś');
+  iastText = iastText.replace(/ś=/g, 's');
+  iastText = iastText.replace(/S=/g, 'Ṣ');
+  iastText = iastText.replace(/Ṣ=/g, 'Ś');
+  iastText = iastText.replace(/Ś=/g, 'S');
+  
+  iastText = iastText.replace(/m=/g, 'ṃ');
+  iastText = iastText.replace(/ṃ=/g, 'ṁ');
+  iastText = iastText.replace(/ṁ=/g, 'm');
+  iastText = iastText.replace(/M=/g, 'Ṃ');
+  iastText = iastText.replace(/Ṃ=/g, 'Ṁ');
+  iastText = iastText.replace(/Ṁ=/g, 'M');
+
+  iastText = iastText.replace(/h=/g, 'ḥ');
+  iastText = iastText.replace(/ḥ=/g, 'h');
+  iastText = iastText.replace(/H=/g, 'Ḥ');
+  iastText = iastText.replace(/Ḥ=/g, 'H');
+
+  iastText = iastText.replace(/k=/g, 'ḵ');
+  iastText = iastText.replace(/ḵ=/g, 'k');
+  iastText = iastText.replace(/K=/g, 'Ḵ');
+  iastText = iastText.replace(/Ḵ=/g, 'K');
+
+  iastText = iastText.replace(/t=/g, 'ṭ');
+  iastText = iastText.replace(/ṭ=/g, 't');
+  iastText = iastText.replace(/T=/g, 'Ṭ');
+  iastText = iastText.replace(/Ṭ=/g, 'T');
+
+  iastText = iastText.replace(/d=/g, 'ḍ');
+  iastText = iastText.replace(/ḍ=/g, 'd');
+  iastText = iastText.replace(/D=/g, 'Ḍ');
+  iastText = iastText.replace(/Ḍ=/g, 'D');
+
+  // keyupEvent.target.value = iastText;
+  return iastText;
 }
 
